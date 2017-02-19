@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.web3j.spring.autoconfigure.Web3jAutoConfiguration

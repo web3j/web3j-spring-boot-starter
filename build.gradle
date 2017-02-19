@@ -1,0 +1,159 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
+apply plugin: 'java'
+// Required for JFrog Artifactory repository
+apply plugin: 'jacoco'
+apply plugin: 'maven-publish'
+
+// Required for Maven Nexus repository
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'idea'
+apply plugin: 'io.codearte.nexus-staging'
+
+group 'org.web3j'
+version '0.1'
+
+sourceCompatibility = 1.8
+
+ext {
+    ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : ''
+    ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : ''
+
+    web3jVersion = '2.0.0'
+    springBootVersion = '1.5.1.RELEASE'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion",
+            "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion",
+            "org.web3j:core:$web3jVersion"
+    compile("org.springframework.boot:spring-boot-starter:$springBootVersion") {
+        exclude module: "commons-logging"
+    }
+    testCompile "junit:junit:4.12",
+            "org.springframework.boot:spring-boot-test:$springBootVersion"
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from Javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier 'sources'
+            }
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    publications = ['mavenJava']
+    publish = true
+    pkg {
+        repo = 'maven'
+        name = 'org.web3j'
+        desc = 'web3j Spring Boot starter integration'
+        userOrg = 'web3j'
+        licenses = ['Apache-2.0']
+        issueTrackerUrl = 'https://github.com/web3j/web3j-spring-boot-starter/issues'
+        vcsUrl = 'https://github.com/web3j/web3j-spring-boot-starter.git'
+        websiteUrl = 'https://web3j.io'
+        publicDownloadNumbers = true
+    }
+}
+
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+signing {
+    required { gradle.taskGraph.hasTask('uploadArchives') }  // only execute as part of this task
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                authentication(
+                        userName: ossrhUsername,
+                        password: ossrhPassword
+                )
+            }
+
+            pom.project {
+                name 'web3j-spring-boot-starter'
+                packaging 'jar'
+                description 'web3j Spring Boot integration'
+                url 'https://web3j.io'
+
+                scm {
+                    connection 'scm:git:https://github.com/web3j/web3j-spring-boot-starter.git'
+                    url 'https://github.com/web3j/web3j-spring-boot-starter.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'conor10'
+                        name 'Conor Svensson'
+                        email 'conor10@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+task release {
+    dependsOn 'clean'
+    dependsOn 'build'
+    dependsOn 'uploadArchives'
+    dependsOn 'closeAndPromoteRepository'
+    dependsOn 'bintrayUpload'
+
+    tasks.findByName('build').mustRunAfter 'clean'
+
+    tasks.findByName('uploadArchives').mustRunAfter 'build'
+    tasks.findByName('closeAndPromoteRepository').mustRunAfter 'uploadArchives'
+
+    tasks.findByName('bintrayUpload').mustRunAfter 'build'
+}
