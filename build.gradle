@@ -81,7 +81,7 @@ bintray {
     pkg {
         repo = 'maven'
         name = 'org.web3j'
-        desc = 'web3j Spring Boot starter integration'
+        desc = 'web3j Spring Boot Starter'
         userOrg = 'web3j'
         licenses = ['Apache-2.0']
         issueTrackerUrl = 'https://github.com/web3j/web3j-spring-boot-starter/issues'
@@ -114,9 +114,9 @@ uploadArchives {
             }
 
             pom.project {
-                name 'web3j-spring-boot-starter'
+                name 'web3j Spring Boot Starter'
                 packaging 'jar'
-                description 'web3j Spring Boot starter integration'
+                description 'web3j Spring Boot Starter'
                 url 'https://web3j.io'
 
                 scm {
