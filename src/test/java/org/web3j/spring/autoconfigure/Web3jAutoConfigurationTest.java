@@ -24,6 +24,7 @@ import org.web3j.protocol.parity.Parity;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class Web3jAutoConfigurationTest {
@@ -51,7 +52,7 @@ public class Web3jAutoConfigurationTest {
     @Test
     public void testInfuraHttpClient() throws Exception {
         verifyHttpConnection(
-                "https://infura.io:12345", InfuraHttpService.class);
+                "https://infura.io/", InfuraHttpService.class);
     }
 
     @Test
@@ -77,13 +78,23 @@ public class Web3jAutoConfigurationTest {
     @Test
     public void testAdminClient() throws Exception {
         load(EmptyConfiguration.class, "web3j.client-address=", "web3j.admin-client=true");
+
         this.context.getBean(Parity.class);
+        try {
+            this.context.getBean(Web3j.class);
+            fail();
+        } catch (NoSuchBeanDefinitionException e) { }
     }
 
-    @Test(expected = NoSuchBeanDefinitionException.class)
+    @Test
     public void testNoAdminClient() throws Exception {
-        load(EmptyConfiguration.class, "web3j.client-address=", "web3j.admin-client=false");
-        this.context.getBean(Parity.class);
+        load(EmptyConfiguration.class, "web3j.client-address=");
+
+        this.context.getBean(Web3j.class);
+        try {
+            this.context.getBean(Parity.class);
+            fail();
+        } catch (NoSuchBeanDefinitionException e) { }
     }
 
     private void verifyHttpConnection(

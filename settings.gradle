@@ -1,1 +1,3 @@
-rootProject.name = 'spring-boot-starter'
+// This should not be shortened
+// See http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-auto-configuration.html#boot-features-custom-starter-naming
+rootProject.name = 'web3j-spring-boot-starter'
