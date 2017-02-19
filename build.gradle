@@ -23,9 +23,10 @@ apply plugin: 'idea'
 apply plugin: 'io.codearte.nexus-staging'
 
 group 'org.web3j'
-version '0.1'
+version '1.0.0'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 ext {
     ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : ''
@@ -44,15 +45,15 @@ dependencies {
             "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion",
             "org.web3j:core:$web3jVersion"
     compile("org.springframework.boot:spring-boot-starter:$springBootVersion") {
-        exclude module: "commons-logging"
+        exclude module: 'commons-logging'
     }
-    testCompile "junit:junit:4.12",
+    testCompile 'junit:junit:4.12',
             "org.springframework.boot:spring-boot-test:$springBootVersion"
 }
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
-    from Javadoc
+    from javadoc
 }
 
 task sourcesJar(type: Jar) {
@@ -115,7 +116,7 @@ uploadArchives {
             pom.project {
                 name 'web3j-spring-boot-starter'
                 packaging 'jar'
-                description 'web3j Spring Boot integration'
+                description 'web3j Spring Boot starter integration'
                 url 'https://web3j.io'
 
                 scm {
