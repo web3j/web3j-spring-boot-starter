@@ -23,7 +23,7 @@ Maven:
 Gradle:
 
 ```groovy
-compile ('org.web3j:web3j-spring-boot-starter:1.0.0')
+compile ('org.web3j:web3j-spring-boot-starter:1.1.0')
 ```
 
 Now Spring can inject web3j instances for you where ever you need them:
