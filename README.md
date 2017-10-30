@@ -16,14 +16,14 @@ Maven:
 <dependency>
     <groupId>org.web3j</groupId>
     <artifactId>web3j-spring-boot-starter</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
 Gradle:
 
 ```groovy
-compile ('org.web3j:web3j-spring-boot-starter:1.2.0')
+compile ('org.web3j:web3j-spring-boot-starter:1.3.0')
 ```
 
 Now Spring can inject web3j instances for you where ever you need them:
@@ -40,7 +40,7 @@ Otherwise simply add the address of the endpoint in your application properties:
 
 ```properties
 # An infura endpoint
-web3j.client-address = https://morden.infura.io/
+web3j.client-address = https://rinkeby.infura.io/
 
 # Or, an IPC endpoing
 web3j.client-address = /path/to/file.ipc
@@ -49,9 +49,9 @@ web3j.client-address = /path/to/file.ipc
 
 ## Admin clients
 
-If you wish to make use of the 
-[Parity](https://github.com/ethcore/parity/wiki/JSONRPC-personal-module) or 
-[Geth](https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal) personal modules 
+If you wish to make use of the personal module methods that are common to both
+[Parity](https://github.com/ethcore/parity/wiki/JSONRPC-personal-module) and 
+[Geth](https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal)  
 to manage accounts, enable the admin client:
 
 ```properties
@@ -62,7 +62,7 @@ Then Spring can inject admin clients:
 
  ```java
  @Autowired
- private Parity parity;
+ private Admin parity;
  ```
 
 **Note**: This is not required for transacting with web3j.  

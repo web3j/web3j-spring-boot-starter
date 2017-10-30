@@ -12,11 +12,10 @@ import org.springframework.context.annotation.Configuration;
 
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jService;
+import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.protocol.infura.InfuraHttpService;
 import org.web3j.protocol.ipc.UnixIpcService;
 import org.web3j.protocol.ipc.WindowsIpcService;
-import org.web3j.protocol.parity.Parity;
 
 /**
  * web3j auto configuration for Spring Boot.
@@ -40,11 +39,12 @@ public class Web3jAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = Web3jProperties.WEB3J_PREFIX, name = "admin-client", havingValue = "true")
-    public Parity parity() {
+    @ConditionalOnProperty(
+            prefix = Web3jProperties.WEB3J_PREFIX, name = "admin-client", havingValue = "true")
+    public Admin admin() {
         Web3jService web3jService = buildService(properties.getClientAddress());
         log.info("Building admin service for endpoint: " + properties.getClientAddress());
-        return Parity.build(web3jService);
+        return Admin.build(web3jService);
     }
 
     private Web3jService buildService(String clientAddress) {
@@ -52,8 +52,6 @@ public class Web3jAutoConfiguration {
 
         if (clientAddress == null || clientAddress.equals("")) {
             web3jService = new HttpService();
-        } else if (clientAddress.contains("infura.io")) {
-            web3jService = new InfuraHttpService(clientAddress);
         } else if (clientAddress.startsWith("http")) {
             web3jService = new HttpService(clientAddress);
         } else if (System.getProperty("os.name").toLowerCase().startsWith("win")) {

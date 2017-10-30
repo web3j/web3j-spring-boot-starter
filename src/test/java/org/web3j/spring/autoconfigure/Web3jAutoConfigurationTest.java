@@ -16,10 +16,9 @@ import org.springframework.context.annotation.Configuration;
 import org.web3j.protocol.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jService;
+import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.protocol.infura.InfuraHttpService;
-import org.web3j.protocol.parity.Parity;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -50,12 +49,6 @@ public class Web3jAutoConfigurationTest {
     }
 
     @Test
-    public void testInfuraHttpClient() throws Exception {
-        verifyHttpConnection(
-                "https://infura.io/", InfuraHttpService.class);
-    }
-
-    @Test
     public void testUnixIpcClient() throws IOException {
         Path path = Files.createTempFile("unix", "ipc");
         path.toFile().deleteOnExit();
@@ -79,7 +72,7 @@ public class Web3jAutoConfigurationTest {
     public void testAdminClient() throws Exception {
         load(EmptyConfiguration.class, "web3j.client-address=", "web3j.admin-client=true");
 
-        this.context.getBean(Parity.class);
+        this.context.getBean(Admin.class);
         try {
             this.context.getBean(Web3j.class);
             fail();
@@ -92,7 +85,7 @@ public class Web3jAutoConfigurationTest {
 
         this.context.getBean(Web3j.class);
         try {
-            this.context.getBean(Parity.class);
+            this.context.getBean(Admin.class);
             fail();
         } catch (NoSuchBeanDefinitionException e) { }
     }
