@@ -16,14 +16,14 @@ Maven:
 <dependency>
     <groupId>org.web3j</groupId>
     <artifactId>web3j-spring-boot-starter</artifactId>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 
 Gradle:
 
 ```groovy
-compile ('org.web3j:web3j-spring-boot-starter:1.3.0')
+compile ('org.web3j:web3j-spring-boot-starter:1.4.0')
 ```
 
 Now Spring can inject web3j instances for you where ever you need them:
@@ -62,7 +62,7 @@ Then Spring can inject admin clients:
 
  ```java
  @Autowired
- private Admin parity;
+ private Admin admin;
  ```
 
 **Note**: This is not required for transacting with web3j.  
