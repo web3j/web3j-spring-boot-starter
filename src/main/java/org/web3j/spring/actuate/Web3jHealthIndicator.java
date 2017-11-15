@@ -7,6 +7,10 @@ import org.springframework.util.StringUtils;
 import org.web3j.protocol.Web3j;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Health check indicator for Web3j
@@ -29,15 +33,29 @@ public class Web3jHealthIndicator extends AbstractHealthIndicator {
             if (StringUtils.isEmpty(netVersion)) {
                 builder.down();
             } else {
-                String web3ClientVersion = web3j.web3ClientVersion().send().getWeb3ClientVersion();
-                BigInteger blockNumber = web3j.ethBlockNumber().send().getBlockNumber();
-                String protocolVersion = web3j.ethProtocolVersion().send().getProtocolVersion();
-                BigInteger netPeerCount = web3j.netPeerCount().send().getQuantity();
-                builder.up().withDetail("netVersion", netVersion)
-                            .withDetail("web3ClientVersion", web3ClientVersion)
-                            .withDetail("protocolVersion", protocolVersion)
-                            .withDetail("netPeerCount", netPeerCount)
-                            .withDetail("blockNumber", blockNumber);
+                builder.up();
+                List<CompletableFuture> futures = new ArrayList<>();
+                futures.add(web3j.web3ClientVersion()
+                        .sendAsync()
+                        .thenApply(web3ClientVersion ->
+                                builder.withDetail("clientVersion", web3ClientVersion.getWeb3ClientVersion())));
+
+                futures.add(web3j.ethBlockNumber()
+                        .sendAsync()
+                        .thenApply(ethBlockNumber ->
+                                builder.withDetail("blockNumber", ethBlockNumber.getBlockNumber())));
+
+                futures.add(web3j.ethProtocolVersion()
+                        .sendAsync()
+                        .thenApply(ethProtocolVersion ->
+                                builder.withDetail("protocolVersion", ethProtocolVersion.getProtocolVersion())));
+
+                futures.add(web3j.netPeerCount()
+                        .sendAsync()
+                        .thenApply(netPeerCount ->
+                                builder.withDetail("netPeerCount", netPeerCount.getQuantity())));
+
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).get();
             }
 
         } catch (Exception ex) {
