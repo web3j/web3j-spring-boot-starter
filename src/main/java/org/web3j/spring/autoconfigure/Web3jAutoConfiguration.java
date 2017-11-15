@@ -3,6 +3,7 @@ package org.web3j.spring.autoconfigure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,6 +17,7 @@ import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.protocol.ipc.UnixIpcService;
 import org.web3j.protocol.ipc.WindowsIpcService;
+import org.web3j.spring.actuate.Web3jHealthIndicator;
 
 /**
  * web3j auto configuration for Spring Boot.
@@ -61,5 +63,11 @@ public class Web3jAutoConfiguration {
         }
 
         return web3jService;
+    }
+
+    @Bean
+    @ConditionalOnBean(Web3j.class)
+    Web3jHealthIndicator web3jHealthIndicator(Web3j web3j) {
+        return new Web3jHealthIndicator(web3j);
     }
 }
