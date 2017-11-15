@@ -26,14 +26,18 @@ public class Web3jHealthIndicator extends AbstractHealthIndicator {
     @Override
     protected void doHealthCheck(Health.Builder builder) throws Exception {
         try {
-
-            String netVersion = web3j.netVersion().send().getNetVersion();
-            if (StringUtils.isEmpty(netVersion)) {
+            boolean listening = web3j.netListening().send().isListening();
+            if (!listening) {
                 builder.down();
             } else {
                 builder.up();
                 List<CompletableFuture> futures = new ArrayList<>();
-                builder.withDetail("netVersion", netVersion);
+
+                futures.add(web3j.netVersion()
+                        .sendAsync()
+                        .thenApply(netVersion ->
+                                builder.withDetail("netVersion", netVersion.getNetVersion())));
+
                 futures.add(web3j.web3ClientVersion()
                         .sendAsync()
                         .thenApply(web3ClientVersion ->
