@@ -23,7 +23,7 @@ apply plugin: 'idea'
 apply plugin: 'io.codearte.nexus-staging'
 
 group 'org.web3j'
-version '1.4.0'
+version '1.5.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -32,8 +32,8 @@ ext {
     ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : ''
     ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : ''
 
-    web3jVersion = '3.1.0'
-    springBootVersion = '1.5.8.RELEASE'
+    web3jVersion = '3.2.0'
+    springBootVersion = '1.5.9.RELEASE'
 
 }
 

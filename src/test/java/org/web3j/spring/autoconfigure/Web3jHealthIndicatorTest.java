@@ -1,6 +1,5 @@
 package org.web3j.spring.autoconfigure;
 
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;

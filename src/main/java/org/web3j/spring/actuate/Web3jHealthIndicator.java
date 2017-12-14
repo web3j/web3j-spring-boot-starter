@@ -3,7 +3,6 @@ package org.web3j.spring.actuate;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import org.web3j.protocol.Web3j;
 
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ public class Web3jHealthIndicator extends AbstractHealthIndicator {
         Assert.notNull(web3j, "Web3j must not be null");
         this.web3j = web3j;
     }
-
 
     @Override
     protected void doHealthCheck(Health.Builder builder) throws Exception {
@@ -64,6 +62,5 @@ public class Web3jHealthIndicator extends AbstractHealthIndicator {
         } catch (Exception ex) {
             builder.down(ex);
         }
-
     }
 }
