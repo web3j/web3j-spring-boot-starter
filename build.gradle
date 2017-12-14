@@ -34,6 +34,7 @@ ext {
 
     web3jVersion = '3.1.0'
     springBootVersion = '1.5.8.RELEASE'
+
 }
 
 repositories {
@@ -42,13 +43,15 @@ repositories {
 
 dependencies {
     compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion",
+            "org.springframework.boot:spring-boot-actuator:$springBootVersion",
             "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion",
             "org.web3j:core:$web3jVersion"
     compile("org.springframework.boot:spring-boot-starter:$springBootVersion") {
         exclude module: 'commons-logging'
     }
     testCompile 'junit:junit:4.12',
-            "org.springframework.boot:spring-boot-test:$springBootVersion"
+            "org.springframework.boot:spring-boot-test:$springBootVersion",
+            "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 }
 
 task javadocJar(type: Jar) {
@@ -136,6 +139,11 @@ uploadArchives {
                         id 'conor10'
                         name 'Conor Svensson'
                         email 'conor10@gmail.com'
+                    }
+                    developer {
+                        id 'ganchix'
+                        name 'Rafael Ríos Moya'
+                        email 'ganchix@gmail.com'
                     }
                 }
             }
