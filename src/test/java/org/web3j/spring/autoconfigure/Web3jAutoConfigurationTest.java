@@ -1,6 +1,5 @@
 package org.web3j.spring.autoconfigure;
 
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
@@ -9,6 +8,9 @@ import java.nio.file.Path;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -20,18 +22,18 @@ import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.web3j.protocol.http.HttpService;
 
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 
 public class Web3jAutoConfigurationTest {
 
     private AnnotationConfigApplicationContext context;
 
     @After
-    public void tearDown() throws IOException {
+    public void tearDown() {
         if (this.context != null) {
             this.context.close();
         }
@@ -67,27 +69,40 @@ public class Web3jAutoConfigurationTest {
         load(EmptyConfiguration.class, "web3j.client-address=" + path.toString());
     }
 
-
     @Test
-    public void testAdminClient() throws Exception {
+    public void testAdminClient() {
         load(EmptyConfiguration.class, "web3j.client-address=", "web3j.admin-client=true");
 
         this.context.getBean(Admin.class);
         try {
             this.context.getBean(Web3j.class);
             fail();
-        } catch (NoSuchBeanDefinitionException e) { }
+        } catch (NoSuchBeanDefinitionException e) {
+        }
     }
 
     @Test
-    public void testNoAdminClient() throws Exception {
+    public void testNoAdminClient() {
         load(EmptyConfiguration.class, "web3j.client-address=");
 
         this.context.getBean(Web3j.class);
         try {
             this.context.getBean(Admin.class);
             fail();
-        } catch (NoSuchBeanDefinitionException e) { }
+        } catch (NoSuchBeanDefinitionException e) {
+        }
+    }
+
+
+    @Test
+    public void testHealthCheckIndicatorDown() {
+        load(EmptyConfiguration.class, "web3j.client-address=");
+
+        HealthIndicator web3jHealthIndicator = this.context.getBean(HealthIndicator.class);
+        Health health = web3jHealthIndicator.health();
+        assertThat(health.getStatus(), equalTo(Status.DOWN));
+        assertThat(health.getDetails().get("error").toString(),
+                startsWith("java.net.ConnectException: Failed to connect to localhost/"));
     }
 
     private void verifyHttpConnection(
@@ -115,7 +130,8 @@ public class Web3jAutoConfigurationTest {
     }
 
     @Configuration
-    static class EmptyConfiguration {}
+    static class EmptyConfiguration {
+    }
 
     private void load(Class<?> config, String... environment) {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
