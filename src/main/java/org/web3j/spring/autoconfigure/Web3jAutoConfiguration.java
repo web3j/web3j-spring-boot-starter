@@ -19,6 +19,11 @@ import org.web3j.protocol.ipc.UnixIpcService;
 import org.web3j.protocol.ipc.WindowsIpcService;
 import org.web3j.spring.actuate.Web3jHealthIndicator;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+
 /**
  * web3j auto configuration for Spring Boot.
  */
@@ -53,9 +58,9 @@ public class Web3jAutoConfiguration {
         Web3jService web3jService;
 
         if (clientAddress == null || clientAddress.equals("")) {
-            web3jService = new HttpService();
+            web3jService = new HttpService(createOkHttpClient());
         } else if (clientAddress.startsWith("http")) {
-            web3jService = new HttpService(clientAddress);
+            web3jService = new HttpService(clientAddress, createOkHttpClient(), false);
         } else if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
             web3jService = new WindowsIpcService(clientAddress);
         } else {
@@ -64,6 +69,31 @@ public class Web3jAutoConfiguration {
 
         return web3jService;
     }
+
+    private OkHttpClient createOkHttpClient() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        configureLogging(builder);
+        configureTimeouts(builder);
+        return builder.build();
+    }
+
+    private void configureTimeouts(OkHttpClient.Builder builder) {
+        Long tos = properties.getHttpTimeoutSeconds();
+        if (tos != null) {
+            builder.connectTimeout(tos, TimeUnit.SECONDS);
+            builder.readTimeout(tos, TimeUnit.SECONDS);  // Sets the socket timeout too
+            builder.writeTimeout(tos, TimeUnit.SECONDS);
+        }
+    }
+
+    private static void configureLogging(OkHttpClient.Builder builder) {
+        if (log.isDebugEnabled()) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor(log::debug);
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            builder.addInterceptor(logging);
+        }
+    }
+
 
     @Bean
     @ConditionalOnBean(Web3j.class)

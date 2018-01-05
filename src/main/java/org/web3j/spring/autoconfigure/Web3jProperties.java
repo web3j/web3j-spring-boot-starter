@@ -18,6 +18,8 @@ public class Web3jProperties {
     
     private String networkId;
 
+    private Long httpTimeoutSeconds;
+
     public String getClientAddress() {
         return clientAddress;
     }
@@ -40,6 +42,14 @@ public class Web3jProperties {
 
     public void setNetworkId(String networkId) {
         this.networkId = networkId;
+    }
+
+    public Long getHttpTimeoutSeconds() {
+        return httpTimeoutSeconds;
+    }
+
+    public void setHttpTimeoutSeconds(Long httpTimeoutSeconds) {
+        this.httpTimeoutSeconds = httpTimeoutSeconds;
     }
     
 }
