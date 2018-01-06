@@ -67,6 +67,23 @@ Then Spring can inject admin clients:
  private Admin admin;
  ```
 
+
+## HTTP client configuration
+
+Some Ethereum operations take longer than the default HTTP timeout set by the `OkHttp3` library
+used by `web3j`. To configure those timeouts set the web3j `httpTimeoutSeconds` property:
+
+```properties
+web3j.httpTimeoutSeconds = 600  
+```
+
+This sets all three OkHttp3 timeouts: `connect`, `read`, and `write`.  
+
+Valid values are any non-negative integer.
+
+A value of '`0`' means: no timeout.  
+
+
 **Note**: This is not required for transacting with web3j.  
 
 
