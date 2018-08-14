@@ -1,24 +1,28 @@
 package org.web3j.spring.autoconfigure;
 
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
+import java.math.BigInteger;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.methods.response.*;
+import org.web3j.protocol.core.methods.response.EthBlockNumber;
+import org.web3j.protocol.core.methods.response.EthProtocolVersion;
+import org.web3j.protocol.core.methods.response.NetPeerCount;
+import org.web3j.protocol.core.methods.response.NetVersion;
+import org.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.web3j.spring.actuate.Web3jHealthEndpointWebExtension;
 import org.web3j.spring.autoconfigure.context.SpringApplicationTest;
 import org.web3j.utils.Numeric;
-
-import java.math.BigInteger;
-
-import static java.util.concurrent.CompletableFuture.supplyAsync;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringApplicationTest.class)
@@ -26,7 +30,7 @@ public class Web3jHealthIndicatorTest {
 
 
     @Autowired
-    HealthIndicator web3jHealthIndicator;
+    Web3jHealthEndpointWebExtension web3jHealthIndicator;
 
     @Autowired
     Web3j web3j;

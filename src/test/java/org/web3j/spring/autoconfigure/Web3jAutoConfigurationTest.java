@@ -1,5 +1,11 @@
 package org.web3j.spring.autoconfigure;
 
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
@@ -9,24 +15,17 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-
 import org.web3j.protocol.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.core.JsonRpc2_0Web3j;
 import org.web3j.protocol.http.HttpService;
-
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.web3j.spring.actuate.Web3jHealthEndpointWebExtension;
 
 public class Web3jAutoConfigurationTest {
 
@@ -98,8 +97,8 @@ public class Web3jAutoConfigurationTest {
     public void testHealthCheckIndicatorDown() {
         load(EmptyConfiguration.class, "web3j.client-address=");
 
-        HealthIndicator web3jHealthIndicator = this.context.getBean(HealthIndicator.class);
-        Health health = web3jHealthIndicator.health();
+        Web3jHealthEndpointWebExtension healthEndpoint = this.context.getBean(Web3jHealthEndpointWebExtension.class);
+        Health health = healthEndpoint.health();
         assertThat(health.getStatus(), equalTo(Status.DOWN));
         assertThat(health.getDetails().get("error").toString(),
                 startsWith("java.net.ConnectException: Failed to connect to localhost/"));
