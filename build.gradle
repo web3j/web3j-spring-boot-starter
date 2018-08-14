@@ -23,7 +23,7 @@ apply plugin: 'idea'
 apply plugin: 'io.codearte.nexus-staging'
 
 group 'org.web3j'
-version '1.6.0'
+version '2.0.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -33,7 +33,7 @@ ext {
     ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : ''
 
     web3jVersion = '3.3.1'
-    springBootVersion = '1.5.10.RELEASE'
+    springBootVersion = '2.0.4.RELEASE'
 
 }
 
@@ -44,6 +44,7 @@ repositories {
 dependencies {
     compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion",
             "org.springframework.boot:spring-boot-actuator:$springBootVersion",
+            "org.springframework.boot:spring-boot-actuator-autoconfigure:$springBootVersion",
             "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion",
             "org.web3j:core:$web3jVersion"
     compile("org.springframework.boot:spring-boot-starter:$springBootVersion") {

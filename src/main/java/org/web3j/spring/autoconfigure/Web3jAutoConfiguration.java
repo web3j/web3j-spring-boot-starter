@@ -17,7 +17,7 @@ import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.protocol.ipc.UnixIpcService;
 import org.web3j.protocol.ipc.WindowsIpcService;
-import org.web3j.spring.actuate.Web3jHealthIndicator;
+import org.web3j.spring.actuate.Web3jHealthEndpointWebExtension;
 
 import java.util.concurrent.TimeUnit;
 
@@ -93,11 +93,11 @@ public class Web3jAutoConfiguration {
             builder.addInterceptor(logging);
         }
     }
-
-
+    
     @Bean
     @ConditionalOnBean(Web3j.class)
-    Web3jHealthIndicator web3jHealthIndicator(Web3j web3j) {
-        return new Web3jHealthIndicator(web3j);
+    Web3jHealthEndpointWebExtension healthEndpointWebExtension(Web3j web3j) {
+    	return new Web3jHealthEndpointWebExtension(web3j);
     }
+    
 }
