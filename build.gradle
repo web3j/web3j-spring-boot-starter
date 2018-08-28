@@ -20,10 +20,11 @@ apply plugin: 'maven-publish'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'idea'
+apply plugin: 'eclipse'
 apply plugin: 'io.codearte.nexus-staging'
 
 group 'org.web3j'
-version '1.6.0'
+version '1.7.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -32,8 +33,9 @@ ext {
     ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : ''
     ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : ''
 
-    web3jVersion = '3.3.1'
-    springBootVersion = '1.5.10.RELEASE'
+    web3jVersion = '3.5.0'
+    springBootVersion = '2.0.4.RELEASE'
+    junitVersion = '4.12'
 
 }
 
@@ -49,7 +51,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter:$springBootVersion") {
         exclude module: 'commons-logging'
     }
-    testCompile 'junit:junit:4.12',
+    testCompile "junit:junit:$junitVersion",
             "org.springframework.boot:spring-boot-test:$springBootVersion",
             "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 }
@@ -144,6 +146,11 @@ uploadArchives {
                         id 'ganchix'
                         name 'Rafael Ríos Moya'
                         email 'ganchix@gmail.com'
+                    }
+                    developer {
+                        id 'reymondtu'
+                        name 'Reymond Tu'
+                        email 'reymondtu@gmx.com'
                     }
                 }
             }
