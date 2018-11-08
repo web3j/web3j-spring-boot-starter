@@ -95,6 +95,7 @@ public class Web3jAutoConfiguration {
     }
     
     @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     @ConditionalOnBean(Web3j.class)
     Web3jHealthEndpointWebExtension healthEndpointWebExtension(Web3j web3j) {
     	return new Web3jHealthEndpointWebExtension(web3j);
