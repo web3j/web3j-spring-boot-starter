@@ -32,7 +32,7 @@ ext {
     ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : ''
     ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : ''
 
-    web3jVersion = '3.3.1'
+    web3jVersion = '3.6.0'
     springBootVersion = '1.5.10.RELEASE'
 
 }
