@@ -8,30 +8,38 @@ buildscript {
 }
 
 plugins {
-    id "com.jfrog.bintray" version "1.7.3"
+    id "com.gradle.plugin-publish" version "0.10.0"
+    id 'com.jfrog.bintray' version '1.8.4'
+    id 'java-gradle-plugin'
+    id 'java'
+
+    // Required for JFrog Artifactory repository
+    id 'jacoco'
+    id 'maven-publish'
+
+    // Required for Maven Nexus repository
+    id 'maven'
+    id 'signing'
+    id 'idea'
 }
 
-apply plugin: 'java'
-// Required for JFrog Artifactory repository
-apply plugin: 'jacoco'
-apply plugin: 'maven-publish'
-
-// Required for Maven Nexus repository
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'idea'
-apply plugin: 'io.codearte.nexus-staging'
+description = 'web3j Spring Boot Starter'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : ''
-    ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : ''
-
     web3jVersion = '4.0.3'
     springBootVersion = '2.0.6.RELEASE'
 
+    ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : System.getenv('OSSRH_USERNAME')
+    ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : System.getenv('OSSRH_PASSWORD')
+    ossrhRepoUrl = project.hasProperty('ossrhRepoUrl') ? project.property('ossrhRepoUrl') : System.getenv('OSSRH_REPO_URL')
+    bintrayUser = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    bintrayKey = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    bintrayGpgPassphrase = project.hasProperty('bintrayGpgPassphrase') ? project.property('bintrayGpgPassphrase') : System.getenv('BINTRAY_GPG_PASSPHRASE')
+    isSnapshotVersion = project.version.endsWith("-SNAPSHOT")
+    manualRelease = project.hasProperty('manualRelease') ? project.property('manualRelease').toBoolean() : false
 }
 
 repositories {
@@ -70,25 +78,64 @@ publishing {
             artifact sourcesJar {
                 classifier 'sources'
             }
+
+            pom {
+                name = project.name
+                description = project.description
+                url = "https://github.com/web3j/web3j-spring-boot-starter"
+
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "conor10"
+                        name = "Conor Svensson"
+                        email = "conor10@gmail.com"
+                    }
+                }
+                scm {
+                    url = "https://github.com/web3j/web3j-spring-boot-starter"
+                    connection = "scm:https://github.com/web3j/web3j-spring-boot-starter.git"
+                    developerConnection = "scm:git://github.com/web3j/web3j-spring-boot-starter.git"
+                }
+            }
         }
     }
 }
 
 bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    user = bintrayUser
+    key = bintrayKey
     publications = ['mavenJava']
     publish = true
     pkg {
         repo = 'maven'
         name = 'org.web3j'
-        desc = 'web3j Spring Boot Starter'
+        desc = project.description
         userOrg = 'web3j'
         licenses = ['Apache-2.0']
         issueTrackerUrl = 'https://github.com/web3j/web3j-spring-boot-starter/issues'
         vcsUrl = 'https://github.com/web3j/web3j-spring-boot-starter.git'
         websiteUrl = 'https://web3j.io'
         publicDownloadNumbers = true
+        version {
+            gpg {
+                sign = true
+                passphrase = bintrayGpgPassphrase
+            }
+            mavenCentralSync {
+                sync = true
+                user = ossrhUsername
+                password = ossrhPassword
+                close = '1'
+            }
+        }
+
     }
 }
 
@@ -105,9 +152,14 @@ signing {
 uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+            onlyIf {
+                // Only run if this is a manual release triggered by a user, or an automated release for snapshots.
+                // We don't need to run this for automated releases.
+                isSnapshotVersion && ossrhUsername != '' && ossrhPassword != '' && ossrhRepoUrl != ''
+            }
+
+            repository(url: ossrhRepoUrl) {
                 authentication(
                         userName: ossrhUsername,
                         password: ossrhPassword
@@ -117,18 +169,20 @@ uploadArchives {
             pom.project {
                 name 'web3j Spring Boot Starter'
                 packaging 'jar'
-                description 'web3j Spring Boot Starter'
+                description project.description
                 url 'https://web3j.io'
 
                 scm {
-                    connection 'scm:git:https://github.com/web3j/web3j-spring-boot-starter.git'
-                    url 'https://github.com/web3j/web3j-spring-boot-starter.git'
+                    url 'https://github.com/web3j/web3j-spring-boot-starter'
+                    connection 'scm:https://github.com/web3j/web3j-spring-boot-starter.git'
+                    developerConnection 'scm:git://github.com/web3j/web3j-spring-boot-starter.git'
                 }
 
                 licenses {
                     license {
                         name 'The Apache License, Version 2.0'
                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
                     }
                 }
 
@@ -149,18 +203,47 @@ uploadArchives {
     }
 }
 
-
 task release {
-    dependsOn 'clean'
     dependsOn 'build'
     dependsOn 'uploadArchives'
-    dependsOn 'closeAndPromoteRepository'
-    dependsOn 'bintrayUpload'
 
-    tasks.findByName('build').mustRunAfter 'clean'
+    doLast {
+        // Validates the user inputs before a release can be performed.
+        if (isSnapshotVersion) {
+            // Only need OSSRH details.
+            logger.lifecycle("About to perform {} snapshot release ...", manualRelease ? "a manual" : "an automated")
 
-    tasks.findByName('uploadArchives').mustRunAfter 'build'
-    tasks.findByName('closeAndPromoteRepository').mustRunAfter 'uploadArchives'
+            if (!ossrhUsername || !ossrhPassword || !ossrhRepoUrl) {
+                throw new InvalidUserDataException("Required parameters missing:  'ossrhUsername', 'ossrhPassword', 'ossrhRepoUrl'")
+            }
 
-    tasks.findByName('bintrayUpload').mustRunAfter 'build'
+            logger.lifecycle(" - ossrhUsername={}", ossrhUsername)
+            logger.lifecycle(" - ossrhPassword={}", ossrhPassword ? "provided" : "not_provided")
+            logger.lifecycle(" - ossrhRepoUrl={}", ossrhRepoUrl)
+        } else {
+            // Release => Need OSSRH and bintray.
+            if (!ossrhUsername || !ossrhPassword || !ossrhRepoUrl) {
+                throw new InvalidUserDataException("Required parameters missing:  'ossrhUsername', 'ossrhPassword', 'ossrhRepoUrl'")
+            }
+            if (!bintrayUser || !bintrayKey || !bintrayGpgPassphrase) {
+                throw new InvalidUserDataException("Required parameters missing:  'bintrayUser', 'bintrayKey', 'bintrayGpgPassphrase'")
+            }
+            logger.lifecycle("About to perform {} full release ...", manualRelease ? "a manual" : "an automated")
+            logger.lifecycle(" - ossrhUsername={}", ossrhUsername)
+            logger.lifecycle(" - ossrhPassword={}", ossrhPassword ? "provided" : "not_provided")
+            logger.lifecycle(" - ossrhRepoUrl={}", ossrhRepoUrl)
+            logger.lifecycle(" - bintrayUser={}", bintrayUser)
+            logger.lifecycle(" - bintrayKey={}", bintrayKey ? "provided" : "not_provided")
+            logger.lifecycle(" - bintrayGpgPassphrase={}", bintrayGpgPassphrase ? "provided" : "not_provided")
+        }
+    }
+
+    // Snapshots go to nexus, non-snapshots go to bintray.
+    if (isSnapshotVersion) {
+        dependsOn 'uploadArchives'
+        tasks.findByName('uploadArchives').mustRunAfter 'build'
+    } else {
+        dependsOn 'bintrayUpload'
+        tasks.findByName('bintrayUpload').mustRunAfter 'build'
+    }
 }
