@@ -52,12 +52,21 @@ dependencies {
             "org.springframework.boot:spring-boot-actuator-autoconfigure:$springBootVersion",
             "org.springframework.boot:spring-boot-configuration-processor:$springBootVersion",
             "org.web3j:core:$web3jVersion"
+
     compile("org.springframework.boot:spring-boot-starter:$springBootVersion") {
         exclude module: 'commons-logging'
     }
     testCompile 'junit:junit:4.12',
-            "org.springframework.boot:spring-boot-test:$springBootVersion",
-            "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+            "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
+            "org.springframework.boot:spring-boot-test:$springBootVersion"
+}
+
+configurations {
+    // We need to exclude these as they clash with gradle-4.10+
+    testRuntimeClasspath.exclude module: 'spring-boot-starter-logging'
+    testRuntimeClasspath.exclude module: "logback-classic"
+    testCompileClasspath.exclude module: 'spring-boot-starter-logging'
+    testCompileClasspath.exclude module: "logback-classic"
 }
 
 task javadocJar(type: Jar) {
@@ -115,7 +124,7 @@ bintray {
     publish = true
     pkg {
         repo = 'maven'
-        name = 'org.web3j'
+        name = project.name
         desc = project.description
         userOrg = 'web3j'
         licenses = ['Apache-2.0']
