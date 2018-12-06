@@ -88,6 +88,10 @@ publishing {
                 classifier 'sources'
             }
 
+            artifact javadocJar {
+                classifier 'javadoc'
+            }
+
             pom {
                 name = project.name
                 description = project.description
@@ -124,7 +128,7 @@ bintray {
     publish = true
     pkg {
         repo = 'maven'
-        name = project.name
+        name = 'web3j-spring-boot-starter'
         desc = project.description
         userOrg = 'web3j'
         licenses = ['Apache-2.0']
@@ -148,14 +152,8 @@ bintray {
     }
 }
 
-
 artifacts {
     archives sourcesJar, javadocJar
-}
-
-signing {
-    required { gradle.taskGraph.hasTask('uploadArchives') }  // only execute as part of this task
-    sign configurations.archives
 }
 
 uploadArchives {
