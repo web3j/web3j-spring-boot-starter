@@ -29,8 +29,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    web3jVersion = '4.0.3'
-    springBootVersion = '2.0.6.RELEASE'
+    web3jVersion = '4.3.0'
+    springBootVersion = '2.1.5.RELEASE'
 
     ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : System.getenv('OSSRH_USERNAME')
     ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : System.getenv('OSSRH_PASSWORD')
@@ -205,6 +205,11 @@ uploadArchives {
                         id 'ganchix'
                         name 'Rafael Ríos Moya'
                         email 'ganchix@gmail.com'
+                    }
+                    developer {
+                        id 'reymondtu'
+                        name 'Reymond Tu'
+                        email 'reymondtu@gmx.com'
                     }
                 }
             }

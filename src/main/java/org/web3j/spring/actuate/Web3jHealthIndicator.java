@@ -29,7 +29,7 @@ public class Web3jHealthIndicator extends AbstractHealthIndicator {
                 builder.down();
             } else {
                 builder.up();
-                List<CompletableFuture> futures = new ArrayList<>();
+                List<CompletableFuture<?>> futures = new ArrayList<>();
 
                 futures.add(web3j.netVersion()
                         .sendAsync()
