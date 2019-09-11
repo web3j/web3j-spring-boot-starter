@@ -44,7 +44,7 @@ Otherwise simply add the address of the endpoint in your application properties:
 # An infura endpoint
 web3j.client-address = https://rinkeby.infura.io/
 
-# Or, an IPC endpoing
+# Or, an IPC endpoint
 web3j.client-address = /path/to/file.ipc
 ```
 
