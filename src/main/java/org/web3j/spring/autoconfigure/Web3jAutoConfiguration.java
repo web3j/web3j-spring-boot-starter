@@ -62,7 +62,7 @@ public class Web3jAutoConfiguration {
             web3jService = new HttpService(createOkHttpClient());
         } else if (clientAddress.startsWith("http")) {
             web3jService = new HttpService(clientAddress, createOkHttpClient(), false);
-        } else if (clientAddress.startsWith("wss")) {
+        } else if (clientAddress.startsWith("ws")) {
             try {
                 web3jService = new WebSocketService(clientAddress, false);
                 ((WebSocketService) web3jService).connect();
