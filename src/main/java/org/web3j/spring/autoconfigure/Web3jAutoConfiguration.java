@@ -15,6 +15,7 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jService;
 import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.protocol.websocket.WebSocketService;
 import org.web3j.protocol.ipc.UnixIpcService;
 import org.web3j.protocol.ipc.WindowsIpcService;
 import org.web3j.spring.actuate.Web3jHealthIndicator;
@@ -61,7 +62,14 @@ public class Web3jAutoConfiguration {
             web3jService = new HttpService(createOkHttpClient());
         } else if (clientAddress.startsWith("http")) {
             web3jService = new HttpService(clientAddress, createOkHttpClient(), false);
-        } else if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+        } else if (clientAddress.startsWith("ws")) {
+            try {
+                web3jService = new WebSocketService(clientAddress, false);
+                ((WebSocketService) web3jService).connect();
+            } catch (Exception ex) { 
+                throw new RuntimeException(ex);
+            }
+        }else if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
             web3jService = new WindowsIpcService(clientAddress);
         } else {
             web3jService = new UnixIpcService(clientAddress);
