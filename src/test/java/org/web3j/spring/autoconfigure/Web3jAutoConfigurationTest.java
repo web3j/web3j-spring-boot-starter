@@ -51,6 +51,13 @@ public class Web3jAutoConfigurationTest {
     }
 
     @Test
+    public void testHttpProxy() throws Exception {
+        verifyHttpProxyConnection(
+                "https://localhost:12345", "http://proxy.fakecompany.com:8080", HttpService.class);
+    }
+
+
+    @Test
     public void testUnixIpcClient() throws IOException {
         Path path = Files.createTempFile("unix", "ipc");
         path.toFile().deleteOnExit();
@@ -114,6 +121,30 @@ public class Web3jAutoConfigurationTest {
             String clientAddress, String expectedClientAddress, Class<? extends Service> cls)
             throws Exception {
         load(EmptyConfiguration.class, "web3j.client-address=" + clientAddress);
+        Web3j web3j = this.context.getBean(Web3j.class);
+
+        Field web3jServiceField = JsonRpc2_0Web3j.class.getDeclaredField("web3jService");
+        web3jServiceField.setAccessible(true);
+        Web3jService web3jService = (Web3jService) web3jServiceField.get(web3j);
+
+        assertTrue(cls.isInstance(web3jService));
+
+        Field urlField = HttpService.class.getDeclaredField("url");
+        urlField.setAccessible(true);
+        String url = (String) urlField.get(web3jService);
+
+        assertThat(url, equalTo(expectedClientAddress));
+    }
+
+    private void verifyHttpProxyConnection(
+            String clientAddress, String proxyUrl, Class<? extends Service> cls) throws Exception {
+        verifyHttpProxyConnection(clientAddress, clientAddress, proxyUrl, cls);
+    }
+
+    private void verifyHttpProxyConnection(
+            String clientAddress, String expectedClientAddress, String proxyUrl, Class<? extends Service> cls)
+            throws Exception {
+        load(EmptyConfiguration.class, "web3j.client-address=" + clientAddress, "web3j.proxy-url=http://proxy.fakecompany.com:8080");
         Web3j web3j = this.context.getBean(Web3j.class);
 
         Field web3jServiceField = JsonRpc2_0Web3j.class.getDeclaredField("web3jService");

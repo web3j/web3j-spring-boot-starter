@@ -20,6 +20,9 @@ public class Web3jProperties {
 
     private Long httpTimeoutSeconds;
 
+
+    private String proxyUrl;
+
     public String getClientAddress() {
         return clientAddress;
     }
@@ -51,5 +54,12 @@ public class Web3jProperties {
     public void setHttpTimeoutSeconds(Long httpTimeoutSeconds) {
         this.httpTimeoutSeconds = httpTimeoutSeconds;
     }
+
+    public String getProxyUrl() { return proxyUrl; }
+
+    public void setProxyUrl(String proxyUrl) {
+        this.proxyUrl = proxyUrl;
+    }
+
     
 }
