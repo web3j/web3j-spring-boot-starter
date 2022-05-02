@@ -19,6 +19,11 @@ import org.web3j.protocol.ipc.UnixIpcService;
 import org.web3j.protocol.ipc.WindowsIpcService;
 import org.web3j.spring.actuate.Web3jHealthIndicator;
 
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.URL;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -72,6 +77,7 @@ public class Web3jAutoConfiguration {
 
     private OkHttpClient createOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        configureProxy(builder);
         configureLogging(builder);
         configureTimeouts(builder);
         return builder.build();
@@ -83,6 +89,17 @@ public class Web3jAutoConfiguration {
             builder.connectTimeout(tos, TimeUnit.SECONDS);
             builder.readTimeout(tos, TimeUnit.SECONDS);  // Sets the socket timeout too
             builder.writeTimeout(tos, TimeUnit.SECONDS);
+        }
+    }
+
+    private void configureProxy(OkHttpClient.Builder builder) {
+        if (properties.getProxyUrl() != null) {
+            try {
+                URL proxyUrl = new URL(properties.getProxyUrl());
+                Proxy proxy = new Proxy(Objects.equals(proxyUrl.getProtocol(), "http") ? Proxy.Type.HTTP : Proxy.Type.SOCKS, new InetSocketAddress(proxyUrl.getHost(), proxyUrl.getPort()));
+                builder.proxy(proxy);
+            } catch (MalformedURLException ignored) {
+            }
         }
     }
 
