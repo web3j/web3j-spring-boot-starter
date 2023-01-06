@@ -29,7 +29,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    web3jVersion = '4.0.3'
+    web3jVersion = '4.8.7'
     springBootVersion = '2.0.6.RELEASE'
 
     ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : System.getenv('OSSRH_USERNAME')
