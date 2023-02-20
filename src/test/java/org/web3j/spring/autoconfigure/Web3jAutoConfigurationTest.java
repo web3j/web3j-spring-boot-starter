@@ -11,7 +11,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
@@ -135,7 +135,7 @@ public class Web3jAutoConfigurationTest {
 
     private void load(Class<?> config, String... environment) {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+        TestPropertyValues.of(environment).applyTo(applicationContext);
         applicationContext.register(config);
         applicationContext.register(Web3jAutoConfiguration.class);
         applicationContext.refresh();

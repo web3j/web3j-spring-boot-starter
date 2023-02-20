@@ -8,8 +8,8 @@ buildscript {
 }
 
 plugins {
-    id "com.gradle.plugin-publish" version "0.10.0"
-    id 'com.jfrog.bintray' version '1.8.4'
+    id "com.gradle.plugin-publish" version "0.15.0"
+    id 'com.jfrog.bintray' version '1.8.5'
     id 'java-gradle-plugin'
     id 'java'
 
@@ -25,12 +25,12 @@ plugins {
 
 description = 'web3j Spring Boot Starter'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 ext {
-    web3jVersion = '4.0.3'
-    springBootVersion = '2.0.6.RELEASE'
+    web3jVersion = '4.9.6'
+    springBootVersion = '2.7.8'
 
     ossrhUsername = project.hasProperty('ossrhUsername') ? project.property('ossrhUsername') : System.getenv('OSSRH_USERNAME')
     ossrhPassword = project.hasProperty('ossrhPassword') ? project.property('ossrhPassword') : System.getenv('OSSRH_PASSWORD')
@@ -56,7 +56,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter:$springBootVersion") {
         exclude module: 'commons-logging'
     }
-    testCompile 'junit:junit:4.12',
+    testCompile 'junit:junit:4.13.2',
             "org.springframework.boot:spring-boot-starter-test:$springBootVersion",
             "org.springframework.boot:spring-boot-test:$springBootVersion"
 }
@@ -67,6 +67,10 @@ configurations {
     testRuntimeClasspath.exclude module: "logback-classic"
     testCompileClasspath.exclude module: 'spring-boot-starter-logging'
     testCompileClasspath.exclude module: "logback-classic"
+}
+
+jacoco {
+    toolVersion = "0.8.8"
 }
 
 task javadocJar(type: Jar) {
